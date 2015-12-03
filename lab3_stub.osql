@@ -73,10 +73,12 @@ getSample(37);
 
 getSample(37);
 /* Comments on speed? */
+
 /*TODO 1.b How will it scale? Why? */
 
 /* Make hash index on WSID to speed up getSample: */
 /*TODO 1.c */
+create_index("getSample", "wsId", "hash", "unique");
 
 /* Reoptimize getSample: */
 reoptimize("getSample");
@@ -93,7 +95,9 @@ getSample(37);
 getSample(37);
 
 /* Comments on speed compared to before indexeing? Why this result? */
+/* No difference.
 /*TODO 1.c How will it scale? Why? */
+/* Best and worst case of hash is the same as best and worst case of full scan. Won't scale any good.
 
 /* -----------------------------------------------------------------------
  Exercise 2: 
@@ -101,7 +105,8 @@ getSample(37);
    within distance from a given wine sample ws 
  ------------------------------------------------------------------------ */
 create function closeWineSamples(WineSample ws, Number distance)
-                               -> Bag of WineSample
+                               -> Bag of WineSample 
+	as select winesample from WineSample where euclid(features(winesample), features(ws)) <= distance;
   /* Find wine samples within distance from a give wine sample ws */
   /**TODO 2.a Your code here*/;
 
@@ -140,7 +145,7 @@ create function kdtree_make() -> Integer xid
  ------------------------------------------------------------------------ */
 create function winesampleIndex()-> Integer as stored;
 /**TODO 3.b Your code here*/
-
+create_index("winesampleIndex", "Integer", "KDTREE", "unique"); 
 /* ----------------------------------------------------------------------
   Exercise 3.c
   Implement a foreign function 
@@ -161,7 +166,7 @@ create function addWineSampleIndex(WineSample ws, Vector of Number fv)
                                  -> WineSample
   as kdtree_put(winesampleIndex(), fv, ws);
 
-for each Winesample ws addWineSampleIndex(ws, features(ws));
+for each WineSample ws addWineSampleIndex(ws, features(ws));
 
 /* ------------------------------------------------------------------------
   Exercise 4.a
@@ -170,7 +175,7 @@ for each Winesample ws addWineSampleIndex(ws, features(ws));
 
  create function kdtreeProximitySearch(Integer xid, 
            Vector of Number f, Number distance)-> Bag of Object
-  as foreign 'JAVA:KDTreeIndex/kdtreeProximitySearch';
+  as foreign 'JAVA:KDTreeIndex_Stub/kdtreeProximitySearch';
   
   - Input : 
      + kdId : an id of KD-tree index
@@ -273,7 +278,7 @@ add_SSF_trans_rule('KDTREE', 1, #'euclid', {#'<='}, #'kdtreeProximitySearch', 1)
   Index the parameter 'f' of the table 'features' using KDTREE index
  ------------------------------------------------------------------------ */
 /**TODO 6.c Your code here*/
-
+create_index("features", "f", "KDTREE", "multiple");
 recompile(#'closeWineSamples'); /* This will fail before you added your code */
 
 pc("closeWinesamples");
