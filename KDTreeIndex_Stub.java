@@ -87,8 +87,10 @@ public class KDTreeIndex_Stub
     public void kdtree_make(CallContext cxt, Tuple tpl)throws AmosException
     {
 	// TODO Increase idgen by 1
-
+    	idgen++;
 	// TODO Return the current value of idgen 
+    	tpl.setElem(0, idgen);
+    	cxt.emit(tpl);
     }
 
     /*-----------------------------------------------------------------
@@ -112,7 +114,8 @@ public class KDTreeIndex_Stub
 	
 	if (m != null)
 	    {
-		// TODO Insert to KD-tree	    
+		// TODO Insert to KD-tree	
+		m.insert(key, val);  
 		// Emit val to tpl 
 		tpl.setElem(3, val);
 		// Emit
@@ -126,24 +129,26 @@ public class KDTreeIndex_Stub
 	KeyDuplicateException, KeySizeException 
     {
 	// TODO Get the id 
-
+   	int id = tpl.getIntElem(0);
 	// TODO Extract feature vector f as key
-	
+	double [] key  = toArray(tpl.getSeqElem(1));
 	// Amos object 
 	Oid val = null;
 
 	KDTree<Oid> m = null;
 	// TODO Get the KD-tree whose id = id	
+	m = locateKdtree(id);
 
 	if (m != null)
 	    {
 		// TODO Search in KD-tree val associated with key
-	    
+	    val = m.search(key); 
 		if (val != null) 
 		    {
 			// TODO Set the return val at position 2
-		
+			tpl.setElem(2, val);
 			// TODO Emit tpl
+			cxt.emit(tpl);
 		    }
 	    }
     }
@@ -155,15 +160,17 @@ public class KDTreeIndex_Stub
 	KeyMissingException
     {
 	// TODO Get the id 
-
+   	int id = tpl.getIntElem(0);
 	// TODO Extract feature vector f as key
+	double [] key  = toArray(tpl.getSeqElem(1));
 
-	KDTree<Oid> m = null;	
+	KDTree<Oid> m = locateKdtree(id)	
 	// TODO Get the KD-tree whose id = id
 
 	if (m != null)
 	    {
 		// TODO Delete a node 
+	    m.delete(key);
 		cxt.emit(tpl);
 	    }
     }
@@ -179,13 +186,15 @@ public class KDTreeIndex_Stub
 	throws AmosException
     {
 	// TODO Get the id 
+    int id = tpl.getIntElem(0);
 
-	KDTree<Oid> m = null;
+	KDTree<Oid> m = locateKdtree(id);
 	// TODO Get the KD-tree whose id = id
 
 	if (m != null)
 	    {
 		// TODO remove from the list.
+	    m_lkdtrees.remove(id);
 		cxt.emit(tpl);
 	    }
     }    
@@ -199,25 +208,27 @@ public class KDTreeIndex_Stub
 	java.lang.IllegalArgumentException 
     {
 	// TODO Get the id 
-
+	int id = tpl.getIntElem(0);
 	// TODO Extract feature vector f as key
-
+	double [] key  = toArray(tpl.getSeqElem(1));
 	// TODO Get the distance 
-    
-	KDTree<Oid>  m = null;
-	// TODO Get the KD-tree whose id = id
-	
+ 	int distance = tpl.getIntElem(2);	
+ 	// TODO Get the KD-tree whose id = id
+	KDTree<Oid>  m = locateKdtree(id);
+
 	if (m != null && m.size() > 0)
 	    {
 		// TODO Find all values whose keys are within distance dist. 
 		List<Oid> ln = null; // list of values 
-
+		ln = m.nearest(key, distance);
 		if (ln != null && ln.size() > 0) 
 		    {		
 			// Loop through and emit the found values
 			for(Oid val : ln) 
 			    {
 				// TODO set val to tpl and emit
+			    	tpl.setElem(2, val);
+			    	cxt.emit(tpl);
 			    }
 		    }
 	    }
