@@ -145,7 +145,7 @@ create function kdtree_make() -> Integer xid
  ------------------------------------------------------------------------ */
 create function winesampleIndex()-> Integer as stored;
 /**TODO 3.b Your code here*/
-create_index("winesampleIndex", "Integer", "KDTREE", "unique"); 
+set winesampleIndex() = kdtree_make(); 
 /* ----------------------------------------------------------------------
   Exercise 3.c
   Implement a foreign function 

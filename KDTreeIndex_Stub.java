@@ -210,21 +210,21 @@ public class KDTreeIndex_Stub
 	// TODO Extract feature vector f as key
 	double [] key  = toArray(tpl.getSeqElem(1));
 	// TODO Get the distance 
-	int distance = tpl.getIntElem(2);
+	double distance = tpl.getIntElem(2);
 	// TODO Get the KD-tree whose id = id
 	KDTree<Oid>  m = locateKdtree(id);
 	
 	if (m != null && m.size() > 0)
 	    {
 		// TODO Find all values whose keys are within distance dist. 
-		List<Oid> ln = m.nearest(key, distance);
+		List<Oid> ln = m.nearestEuclidean(key, distance);
 		if (ln != null && ln.size() > 0) 
 		    {		
 			// Loop through and emit the found values
 			for(Oid val : ln) 
 			    {
 				// TODO set val to tpl and emit
-			    	tpl.setElem(2, val);
+			    	tpl.setElem(3, val);
 			    	cxt.emit(tpl);
 			    }
 		    }
