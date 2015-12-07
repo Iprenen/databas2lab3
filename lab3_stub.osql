@@ -197,8 +197,8 @@ create function kdtreeProximitySearch(Integer xid, Vector of Number f,
   the feature of ws using the KD-index. 
  ------------------------------------------------------------------------ */
 create function closeWineSamples2(WineSample ws, Number distance) 
-                                -> Bag of WineSample
-  /**TODO 4.b Your code here*/;
+                                -> Bag of WineSample as
+	kdtreeProximitySearch(winesampleIndex(), features(ws), distance);
 
 
 /* What are the wine samples within distance 5 from :ws? */
@@ -302,6 +302,8 @@ closeWinesamples(:ws,3);
   using KDTREE index to one using XTREE instead
  ------------------------------------------------------------------------ */
 /**TODO 7.a */
+drop_index("features", "f");
+create_index("features", "f", "XTREE", "multiple");
 
 /* Reoptimize closeWinesamples: */
 reoptimize("closeWinesamples");
@@ -324,10 +326,12 @@ closeWineSamples(:ws, 3);
   Make function to find wine samples having a given wine sample:
  ------------------------------------------------------------------------ */
 create function featuredWineSamples(Vector of Number fv)->Bag of Winesample
+	as select winesample from WineSample where features(winesample) = fv;
   /**TODO 8.a Your code here */;
 
 
 set :fv = {7,0.31,0.26,7.4,0.069,28,160,0.9954,3.13,0.46,9.8};
+set :fv2 = {7,0.27,0.36,20.7,0.045,45,170,1.001,3,0.45,8.8,6};
 /* Run it 10 times, look at execution plan, comment on scalability */
 
 featuredWineSamples(:fv);
